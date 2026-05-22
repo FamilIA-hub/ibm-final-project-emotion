@@ -13,12 +13,22 @@ def emotion_detector(textToAnalyze):
     myobj = { "raw_document": { "text": textToAnalyze } }
     #Creates a dictionary with the text provided.
     response = requests.post(url, json = myobj, headers=header)
-    formatted_response = json.loads(response.text)
-    anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
-    disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
-    fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
-    joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
-    sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
+    if response.status_code == 200:
+        formatted_response = json.loads(response.text)
+        anger_score = formatted_response['emotionPredictions'][0]['emotion']['anger']
+        disgust_score = formatted_response['emotionPredictions'][0]['emotion']['disgust']
+        fear_score = formatted_response['emotionPredictions'][0]['emotion']['fear']
+        joy_score = formatted_response['emotionPredictions'][0]['emotion']['joy']
+        sadness_score = formatted_response['emotionPredictions'][0]['emotion']['sadness']
+    
+    #If there's no input text and status_code is $00, set every variable to None
+    elif response.status_code == 400:
+        anger_score = None
+        disgust_score = None
+        fear_score = None
+        joy_score = None
+        sadness_score = None
+    
     #Extract the scores for each emotion from the dictionary in the list
     emotions = {
         'anger' : anger_score,
@@ -28,7 +38,15 @@ def emotion_detector(textToAnalyze):
         'sadness' : sadness_score
     }
     #create a dictionary with the emotions and the scores
-    emotions['dominant_emotion'] = max(emotions, key=emotions.get)
+    #If more than one value is None because status_code was 400 then dominant emotion has to be None.
+    if anger_score != None and joy_score != None:
+        emotions['dominant_emotion'] = max(emotions, key=emotions.get)
+    else:
+        emotions['dominant_emotion'] = None
+
     #find the highest score and add the emotion as a new value in the dictionary
     return emotions
+
+
+
 
