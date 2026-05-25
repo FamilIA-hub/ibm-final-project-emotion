@@ -16,7 +16,7 @@ def emotionapp():
     '''
     text_to_process = request.args.get('textToAnalyze')
     result = emotion_detector(text_to_process)
-    if result['dominant_emotion'] != None:
+    if result['dominant_emotion'] is not None:
         return (
             f"For the given statement, the system response is "
             f"'anger': {result['anger']}, "
@@ -26,10 +26,9 @@ def emotionapp():
             f"'sadness': {result['sadness']}. "
             f"The dominant emotion is {result['dominant_emotion']}."
         )
-    
-    else:
-        return ('Invalid text! Please try again!.')
- 
+
+    return 'Invalid text! Please try again!.'
+
 @app.route("/")
 def render_index_page():
     ''' This function renders the main application index page
@@ -38,6 +37,6 @@ def render_index_page():
 
 
 if __name__ == "__main__":
-    ''' This functions executes the flask app and deploys it on localhost:5000
-    '''
+    #This functions executes the flask app and deploys it on localhost:5000
     app.run(host="0.0.0.0", port=5000, debug = True)
+    
